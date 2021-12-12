@@ -3,29 +3,28 @@ import time
 import socket
 import threading
 
-# ---Налаштування вікна---
+
 root = Tk()
 root.title('[ Gamer 2 ]')
 root.geometry('400x250')   # 470 / 700 || 1410 / 700
 canv = Canvas(root, bg='#BC2E2E')
 canv.pack(fill=BOTH, expand=1)
 root.resizable(width=False, height=False)
-# ------------------------
 
-# ---Налаштування мережі---
-host = 'localhost'		# !!! Вписати IP на якому розташований код !!!
+
+
+host = 'localhost'		
 port = 0
-server = ('localhost', 2021)    # ! Вписати IP пристрою де є сервер !
+server = ('localhost', 2021)   
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((host, port))
 s.setblocking(False)
 shutdown = False
 data = ''
 s.sendto('g2.py'.encode('utf-8'), server)
-# -------------------------
 
 
-# ---Клас Ball---
+
 class ball:
     def __init__(self):
         self.x = 0
@@ -45,7 +44,6 @@ class ball:
         self.y += self.vy
         self.position[0] = self.x
         self.position[1] = self.y
-        # print(self.position) # перевірка позиції
         active_wall = list(set(canv.find_withtag('wall')) & set(
             canv.find_overlapping(self.x - self.r * 0.7, self.y - self.r * 0.7, self.x + self.r * 0.7,
                                   self.y + self.r * 0.7)))
@@ -77,8 +75,8 @@ class ball:
             self.lin[0] = self.map
             self.lin[1] = self.position
             s.sendto(f'{self.lin[0]}${self.lin[1][0]}${self.lin[1][1]}'.encode('utf-8'), server)
-            self.x = 235  # Там де зявится
-            self.y = 800  # Там де зявится
+            self.x = 235  
+            self.y = 800 
             self.vx = 0
             self.vy = 0
             self.goal = 0
@@ -88,8 +86,8 @@ class ball:
             self.status = '!Goal to Gamer2!'
             self.lin[2] = self.status
             s.sendto(f'{self.lin[0]}&{self.lin[2]}'.encode('utf-8'), server)
-            self.x = 235  # Там де зявится
-            self.y = 800  # Там де зявится
+            self.x = 235 
+            self.y = 800
             self.vx = 0
             self.vy = 0
             self.goal = 0
@@ -97,10 +95,8 @@ class ball:
 
     def paint(self):
         canv.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r)
-# ---------------
 
 
-# ---Клас Gamer---
 class gamer:
     def __init__(self):
         self.x = 0
@@ -109,8 +105,8 @@ class gamer:
         self.v = 3  # Швидкість
         self.d = 4  # Ширина
         self.mode = ''
-        self.score = 0  # Початковий рахунок
-        self.xy_score = (0, 0)  # Координати рахунка
+        self.score = 0 
+        self.xy_score = (0, 0)  
         self.id = canv.create_rectangle(self.x - self.w, self.y - self.d, self.x + self.w, self.y + self.d,
                                         fill='white', tags=('wall', 'y'))
         self.id_score = canv.create_text(0, 0, text='', font='Tahoma 24', fill='white')
@@ -120,22 +116,21 @@ class gamer:
         canv.coords(self.id_score, self.xy_score[0], self.xy_score[1])
         canv.itemconfig(self.id_score, text=self.score)
 
-    def move(self):  # Межі пересування
+    def move(self): 
         if self.mode == 'left' and self.x > (10 + self.w):
             self.x -= self.v
         elif self.mode == 'right' and self.x < (390 - self.w):
             self.x += self.v
         self.paint()
-# ----------------
 
 
-# ---Створення Ball---
+
 b = ball()
 b.x = 235
 b.y = 800
-b.vx = 0    # Швидкість по х
-b.vy = 0    # Швидкість по у
-# --------------------
+b.vx = 0   
+b.vy = 0   
+
 
 # ---Створення стін---
 canv.create_line(5, 245, 395, 245, width=2, fill='white', tags='g1')  # Bottom
