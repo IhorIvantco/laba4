@@ -3,19 +3,17 @@ import time
 import socket
 import threading
 
-# ---Налаштування вікна---
 root = Tk()
 root.title('[ Gamer 1 ]')
 root.geometry('400x250')  # 470 / 700 || 1410 / 700
 canv = Canvas(root, bg='#2E41BC')
 canv.pack(fill=BOTH, expand=1)
 root.resizable(width=False, height=False)
-# ------------------------
 
-# ---Налаштування мережі---
-host = 'localhost'  # !!! Вписати IP на якому розташований код !!!
+
+host = 'localhost'
 port = 0
-server = ('localhost', 2021)  # ! Вписати IP пристрою де є сервер !
+server = ('localhost', 2021)
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((host, port))
 s.setblocking(False)
@@ -24,10 +22,6 @@ data = ''
 s.sendto('g1.py'.encode('utf-8'), server)
 
 
-# -------------------------
-
-
-# ---Клас Ball---
 class ball:
     def __init__(self):
         self.x = 0
@@ -99,11 +93,8 @@ class ball:
     def paint(self):
         canv.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r)
 
-
-# ---------------
-
-
-# ---Клас Gamer---
+        
+        
 class gamer:
     def __init__(self):
         self.x = 0
@@ -131,46 +122,43 @@ class gamer:
         self.paint()
 
 
-# ----------------
 
-
-# ---Створення Ball---
+        
 b = ball()
 b.x = 235
 b.y = 800
-b.vx = 0  # Швидкість по х
-b.vy = 0  # Швидкість по у
-# --------------------
+b.vx = 0 
+b.vy = 0  
 
-# ---Створення стін---
+
+
 canv.create_line(5, 245, 395, 245, width=2, fill='white', tags='g1')  # Bottom
 canv.create_line(5, 5, 395, 5, width=2, fill='white', tags='g2')  # up | Торкання на 463
 
 canv.create_line(5, 4, 5, 246, width=5, fill='white', tag=('wall', 'x'))  # left
 canv.create_line(395, 4, 395, 246, width=5, fill='white', tag=('wall', 'x'))  # right
-# --------------------
 
-# ---Створення гравців---
+
+
 g1 = gamer()
-g1.x = 200  # Розташування по х
-g1.y = 230  # Розташування по у
+g1.x = 200 
+g1.y = 230 
 g1.paint()
-g1.xy_score = (200, 150)  # Рахунок
+g1.xy_score = (200, 150)  
 game = 1
 
 
-# -----------------------
 
 
-# ---Нажимання клавіш---
+
 def key_press(event):
     global game
-    if event.keycode == 65:  # 65 = 'A'
+    if event.keycode == 65:  
         g1.mode = 'left'
-    elif event.keycode == 68:  # 68 = 'D'
+    elif event.keycode == 68:  
         g1.mode = 'right'
 
-    elif event.keycode == 32:  # 32 = 'Пробіл'
+    elif event.keycode == 32:  
         game = 1
 
 
@@ -183,11 +171,11 @@ root.bind('<Key>', key_press)
 root.bind('<KeyRelease>', key_release)
 
 
-# ----------------------
 
 
-# ---Обробка повідомлень---
-def receving(name, sock):  # Прийнаття повідомлень
+
+
+def receving(name, sock): 
     global data
     while not shutdown:
         try:
@@ -205,7 +193,7 @@ print('--- [ Gamer 1 ] ---')
 print(f'IP :: {host}\n')
 rT = threading.Thread(target=receving, args=('RecvThread', s))
 rT.start()
-# -------------------------
+
 
 while 1:
     if game:
@@ -218,12 +206,11 @@ while 1:
     time.sleep(0.02)
     canv.update()
 
-    # ---Телепортаці і голи---
+
     if '$' in data:
-        data_lin = data.split('$')  # [0] - map | [1] - x | [2] - y
+        data_lin = data.split('$')
         data = data.replace('$', '')
         data_x = float(data_lin[0])
-        # Зсування до нижньої частини
         data_y = 20
         b.x = data_x
         b.y = data_y
@@ -233,7 +220,7 @@ while 1:
     elif data == '2':
         data = ''
         g1.score += 1
-    # ------------------------
+
 
 root.mainloop()
 rT.join()
