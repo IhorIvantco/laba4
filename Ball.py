@@ -4,19 +4,16 @@ import time
 import socket
 import threading
 
-# ---Налаштування вікна---
 root = Tk()
 root.title('[ Ball ]')
 root.geometry('400x250')   # 470 / 700 || 1410 / 700
 canv = Canvas(root, bg='#0044aa')
 canv.pack(fill=BOTH, expand=1)
 root.resizable(width=False, height=False)
-# ------------------------
 
-# ---Налаштування мережі---
-host = 'localhost'		# !!! Вписати IP на якому розташований код !!!
+host = 'localhost'		
 port = 0
-server = ('localhost', 2021)    # ! Вписати IP пристрою де є сервер !
+server = ('localhost', 2021)   
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((host, port))
 s.setblocking(False)
@@ -80,8 +77,8 @@ class ball:
             self.lin[0] = self.map
             self.lin[1] = self.position
             s.sendto(f'{self.lin[0]}${self.lin[1][0]}${self.lin[1][1]}'.encode('utf-8'), server)
-            self.x = 235  # Там де зявится0
-            self.y = 800  # Там де зявится
+            self.x = 235  
+            self.y = 800  
             self.vx = 0
             self.vy = 0
             self.goal = 0
@@ -90,8 +87,8 @@ class ball:
             self.lin[0] = self.map
             self.lin[1] = self.position
             s.sendto(f'{self.lin[0]}${self.lin[1][0]}${self.lin[1][1]}'.encode('utf-8'), server)
-            self.x = 235  # Там де зявится
-            self.y = 800  # Там де зявится
+            self.x = 235  
+            self.y = 800 
             self.vx = 0
             self.vy = 0
             self.goal = 0
@@ -99,18 +96,18 @@ class ball:
 
     def paint(self):
         canv.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r)
-# ---------------
 
-# ---Випадковий напрямок руху Ball---
+
+
 def rand(side=None):
     """side = True (<-)
     side = False (->)
     :return: [4/-4 ; 4/-4]
     """
     ex = True
-    lin_v = []  # [0] - x | [1] - y
+    lin_v = [] 
     rand_v = 0
-    if side is True:    # Щоб летів у ліву частину верх/вниз
+    if side is True:   
         while ex:
             randing = random.randint(0, 1)
             if randing == 0:
@@ -124,7 +121,7 @@ def rand(side=None):
                 else:
                     lin_v = []
         return lin_v
-    elif side is False:     # Щоб летів у праву частину верх/вниз
+    elif side is False:     
         while ex:
             randing = random.randint(0, 1)
             if randing == 0:
@@ -138,7 +135,7 @@ def rand(side=None):
                 else:
                     lin_v = []
         return lin_v
-    else:                   # Щоб летів у рамдомний напрямок
+    else:                 
         while ex:
             randing = random.randint(0, 1)
             if randing == 0:
@@ -149,42 +146,40 @@ def rand(side=None):
             if len(lin_v) == 2:
                 ex = False
         return lin_v
-# -----------------------------------
 
 
-# ---Створення Ball---
+
+
 b = ball()
 b.x = 200
 b.y = 125
 v = rand()
-b.vx = v[0]    # Швидкість по х
-b.vy = v[1]    # Швидкість по у
+b.vx = v[0]    
+b.vy = v[1]    
 game = 0
-# --------------------
 
-# ---Створення стін---
+
+
 canv.create_line(1, 0, 1, 300, width=10, fill='white', tags=('wall', 'x'))   # Ліва | Торкання на 7
 canv.create_line(399, 0, 399, 300, width=10, fill='white', tags=('wall', 'x'))  # Права | Торкання на 463
 canv.create_line(6, 125, 394, 125, width=1, dash=(2, 2), fill='white')  # Середня
 
 canv.create_line(5, 5, 395, 5, width=10, fill='white', tag='g2')
 canv.create_line(5, 245, 395, 245, width=10, fill='white', tag='g1')
-# --------------------
 
-# ---Нажимання клавіш---
+
+
 def key_press(event):
     global game
 
-    if event.keycode == 32:   # 32 = 'Пробіл'
+    if event.keycode == 32:  
         game = 1
 
 
 root.bind('<Key>', key_press)
-# ----------------------
 
 
-# ---Обробка повідомлень---
-def receving(name, sock):   # Прийнаття повідомлень
+def receving(name, sock):   
     global data
     while not shutdown:
         try:
@@ -210,9 +205,8 @@ while 1:
     time.sleep(0.02)
     canv.update()
 
-    # ---Телепортаці і голи---
     if '$' in data:
-        data_lin = data.split('$')  # [0] - map | [1] - x | [2] - y
+        data_lin = data.split('$') 
         data = data.replace('$', '')
         data_x = data_lin[1]
         data_y = data_lin[2]
@@ -246,7 +240,7 @@ while 1:
         b.vx = v[0]
         b.vy = v[1]
         b.kill()
-    # ------------------------
+   
 
 root.mainloop()
 rT.join()
